@@ -22,6 +22,7 @@ from utils.testutils import *
 import time
 import requests
 
+# our Target names and the target architecture names do not always match
 TtoA={'core2-64':'x86_64',
       'i586':'i586',
       'aarch64':'aarch64',
@@ -40,8 +41,8 @@ class TestToolchainsRegistered(unittest.TestCase):
         self.codiPort=os.environ['CODI_PORT']
         self.dockerhubRepo=os.environ['DOCKERHUB_REPO']
         self.ypRelease=os.environ['YP_RELEASE']
-        cmd = "docker  run -d -v /var/run/docker.sock:/var/run/docker.sock -p %s:%s  --name=crops-codi %s/codi" % \
-              (self.codiPort,self.codiPort,self.dockerhubRepo)
+        cmd = "docker  run -d -v /var/run/docker.sock:/var/run/docker.sock -p %s:%s  --name=crops-codi crops/codi" % \
+              (self.codiPort,self.codiPort)
         p=subprocess.Popen(cmd.split(), shell=False)
         # getting rethinkdb and codi up can take a bit
         time.sleep(10)
@@ -56,7 +57,7 @@ class TestToolchainsRegistered(unittest.TestCase):
     def tearDown(self):
         #remove the server container
         cmd = "docker rm -f crops-codi"
-        #p=subprocess.Popen(cmd.split(), shell=False)
+        p=subprocess.Popen(cmd.split(), shell=False)
         pass
 
 

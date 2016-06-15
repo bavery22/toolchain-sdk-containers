@@ -10,7 +10,7 @@ services:
 env:
     global:
         - DOCKER_VERSION=1.10.1-0~trusty
-        - TARGETS="aarch64 armv5e armv7a-neon mips64 core2-64 i586"
+        - TARGETS="core2-64 i586"
         - YP_RELEASE=2.1
         - CROPS_RELEASE=latest
         - CODI_ADDR=localhost
@@ -43,6 +43,7 @@ script:
   - source ./base/scripts/setDockerhubRepo.sh
   - echo "Building SDK Containers"
   - ./scripts/build_containers.sdk
+  - docker images
   - python tests.py
 
 
