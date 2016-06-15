@@ -12,9 +12,9 @@ env:
         - DOCKER_VERSION=1.10.1-0~trusty
         - TARGETS="aarch64 armv5e armv7a-neon mips64 core2-64 i586"
         - YP_RELEASE=2.1
-        - ZEPHYR_RELEASE=0.7.5
-        - OSTRO_RELEASE=v1.0.0
         - CROPS_RELEASE=latest
+        - CODI_ADDR=localhost
+        - CODI_PORT=10000
         - DOCKERHUB_REPO=bavery
         - secure: "YrpUzQT/3LnEqOeoRSf+iV6FmlrYAwCJYxZgdhCaxGOFWKtmfNDAM8K9L/I/9NS3d1MD28YQ6o0gTggvjKCensMHu69B2ln++qKHqNG1ZWfSTU+jvhyI7BRdORh2qIx7laVUn48kXSazhQIDEgwcj0Qvwmhwwosjsy6Q74qCzO4hHqFUIWL97vdfzqJss/rKb3+Yp06rFf8T6nepKhUJGksOXDsVsZs00sxKQmMH/7Ryu5ylacHTnp27wPkb5k0CsvMUNFG7bNRy3QjTl4mi3RXXTzgreN8Z+ES4HLeHfKCS2J+uUzg4Rj0zUqyLtmiGsOBK6chO3/KYMU+nsOILHVvHm+Hyp1GNT+PVgDhtBHvgCfNC+JONp2fKGHMQ9ZPKwPVleoS2U8lmh65WQ6dkN42h0ac9Q9clSQtLezWLbvbypo3g+VMPYK49RWAzQfHD3RUC81tcApoQ5Zy5cXJa0m7bvnZmSbfiv+ETkPkR6y0MPwr60tCcDb3wNV6CDffQ/Scnv8VCfKDE/wxjfllPWXCY93FTurMskus8AIPa5Wcx8hPV5ve4VIVmgfjqbY+C6x4Qv5PCPufijF13HqYG8UF7+ybrOqamgau9LfHnGtSqyM8bf1A+nZZtZ2bE5Mq2fsUIWKNFPp9Dp379Q/79CcwVdFFzpvpgPAWPjoz9Few="
         - secure: "Ckr57YwuNEKBuVI4atxwtH9c3p+YQENpV98SricIqfHgXFNhEyM9Zb/JwfZphef71eiXihlCjXZ9YBHBGhpl8T0t4HOFM2JMZ26VhOZBypIqfhSIhl3kNJfRONK3ZRrmoEuaj7L7Y0j1WOkadeES4kH6Q8f0c6IwL/6X1VHMvRT2mmz4e2oeuqZQ3RRqNBi4dv+IHqUwyUIuF0OFQezuxoSbZEJAHgB+KHPuiWc+GBu1cp71wd/VSqMr5smXzk14yAoVFJivXfFgJmQqxLd78ojhMBs0674wEgTyPQzt5AWMQ7sPBSfqop93+pdFq675qpY3EktEa89j0aMZ/N0iXRndLCm7vwTu1jpQ8iqtqo6n5HZvPIdTX6YKQilw954mvJCrSYHIzteIrTTXDk+eKqKeyxFFREP/WcxC2et6tt89KpA8QTRkzFerj3Ee7nVSugaXdv6lptHbcpRLV3pPhJMvubTnCNQuoj3zpxqcpyqv98FNQJ7Sw/CVEa81xzPJ0SREerpE8Yx2qCPQ/zivrouZfWZJ3jjC8Z4z7iagSWrqJY+E2sJORyrMbNW/RuDzTGSqnINzgulxqcDQzkprbXers8GlFAx84MxdOh0B7wIDmAb21j9ar6uuxWhLUYRvUrdwHWpoNXhyzY2Tx2iLerlPiqDKS5m2o0VNvQKWDoM="
@@ -31,17 +31,19 @@ before_install:
 
   # upgrade docker-engine to specific version
   - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION}
+install:
+  - pip install requests
 
+before_script:
+  - export PYTHONPATH=$PYTHONPATH:$(pwd)/base/tests/unit/
 
 script:
-  - ./scripts/build_ceed
   - docker version
+  - git submodule update --init --recursive
+  - echo "set Docker Repo"
+  - source ./scripts/setDockerhubRepo.sh
   - echo "Building SDK Containers"
   - ./scripts/build_containers.sdk
-  - echo "Building Zephyr Containers"
-  - ./scripts/build_containers.zephyr
-  - echo "Building Ostro Containers"
-  - ./scripts/build_containers.ostro
   - python tests.py
 
 
