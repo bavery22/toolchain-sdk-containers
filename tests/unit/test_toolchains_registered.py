@@ -31,8 +31,8 @@ TtoA={'core2-64':'x86_64',
 
 def startTargetToolchain(name):
 
-    cmd = "docker  run -d -v /var/run/docker.sock:/var/run/docker.sock --link crops-codi   %s" % \
-          (name)
+#    cmd = "docker  run -d -v /var/run/docker.sock:/var/run/docker.sock --link crops-codi   %s" % (name)
+    cmd = "docker  run -d  --link crops-codi   %s" % (name)
     p=subprocess.Popen(cmd.split(), shell=False)
 
 class TestToolchainsRegistered(unittest.TestCase):
@@ -41,11 +41,31 @@ class TestToolchainsRegistered(unittest.TestCase):
         self.codiPort=os.environ['CODI_PORT']
         self.dockerhubRepo=os.environ['DOCKERHUB_REPO']
         self.ypRelease=os.environ['YP_RELEASE']
-        cmd = "docker  run -d -v /var/run/docker.sock:/var/run/docker.sock -p %s:%s  --name=crops-codi crops/codi" % \
+        #        cmd = "docker  run -d -v /var/run/docker.sock:/var/run/docker.sock -p %s:%s  --name=crops-codi crops/codi"
+        cmd = "docker  run -d  -p %s:%s  --name=crops-codi crops/codi" % \
               (self.codiPort,self.codiPort)
+        print ("codi cmd = <%s>\n"%(cmd))
         p=subprocess.Popen(cmd.split(), shell=False)
+        sout,serr = p.communicate()
+        print("p.returncode=%d sout = <%s> serr = <%s>\n"%(p.returncode,sout,serr))
         # getting rethinkdb and codi up can take a bit
         time.sleep(10)
+        cmd="docker ps -a"
+        print ("cmd = <%s>\n"%(cmd))
+        p=subprocess.Popen(cmd.split(), shell=False)
+        sout,serr = p.communicate()
+        print("p.returncode=%d sout = <%s> serr = <%s>\n"%(p.returncode,sout,serr))
+        cmd="docker inspect crops-codi"
+        print ("cmd = <%s>\n"%(cmd))
+        p=subprocess.Popen(cmd.split(), shell=False)
+        sout,serr = p.communicate()
+        print("p.returncode=%d sout = <%s> serr = <%s>\n"%(p.returncode,sout,serr))
+        cmd="docker logs crops-codi"
+        print ("cmd = <%s>\n"%(cmd))
+        p=subprocess.Popen(cmd.split(), shell=False)
+        sout,serr = p.communicate()
+        print("p.returncode=%d sout = <%s> serr = <%s>\n"%(p.returncode,sout,serr))
+
         self.targets = os.environ['TARGETS']
         self.toolchainContainers=[]
         for t in self.targets.split():
