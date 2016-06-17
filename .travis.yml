@@ -45,6 +45,10 @@ script:
   - echo "Building SDK Containers"
   - ./scripts/build_containers.sdk
   - docker images
+  - docker  run -d  -p 10003:10003  --name=crops-codi3 crops/codi
+  - docker  inspect crops-codi3 | grep Running
+  - docker logs crops-codi3
+  - docker  run -d  --link crops-codi3   bavery/toolchain-i586:2.1
   - python tests.py
   - ./base/scripts/pushToDockerhub.sh
 
