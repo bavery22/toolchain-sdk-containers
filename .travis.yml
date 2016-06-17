@@ -30,7 +30,7 @@ before_install:
   - docker pull crops/codi:latest
 
   # upgrade docker-engine to specific version
-  - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION} nmap
+  - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION} net-tools
 install:
   - pip install requests
 
@@ -45,9 +45,9 @@ script:
   - echo "Building SDK Containers"
   - ./scripts/build_containers.sdk
   - docker images
-  - nmap localhost | egrep 10000
+  - netstat -apn
   - python tests.py
-  - nmap localhost | egrep 10000
+  - netstat -apn
   - ./base/scripts/pushToDockerhub.sh
 
 after_success:

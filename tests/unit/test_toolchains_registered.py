@@ -32,8 +32,15 @@ TtoA={'core2-64':'x86_64',
 def startTargetToolchain(name):
 
 #    cmd = "docker  run -d -v /var/run/docker.sock:/var/run/docker.sock --link crops-codi   %s" % (name)
-    cmd = "docker  run -d  --link crops-codi   %s" % (name)
+    cmd = "docker  run -d  --link crops-codi --name=tc   %s" % (name)
     p=subprocess.Popen(cmd.split(), shell=False)
+    sout,serr = p.communicate()
+    print("p.returncode=%d sout = <%s> serr = <%s>\n"%(p.returncode,sout,serr))
+    cmd="docker logs tc"
+    print ("cmd = <%s>\n"%(cmd))
+    p=subprocess.Popen(cmd.split(), shell=False)
+    sout,serr = p.communicate()
+    print("p.returncode=%d sout = <%s> serr = <%s>\n"%(p.returncode,sout,serr))
 
 class TestToolchainsRegistered(unittest.TestCase):
     def setUp(self):
