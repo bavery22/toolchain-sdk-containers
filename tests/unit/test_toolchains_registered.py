@@ -77,7 +77,7 @@ class TestToolchainsRegistered(unittest.TestCase):
     def tearDown(self):
         #remove the server container
         cmd = "docker rm -f crops-codi"
-        p=subprocess.Popen(cmd.split(), shell=False)
+        #p=subprocess.Popen(cmd.split(), shell=False)
         pass
 
 

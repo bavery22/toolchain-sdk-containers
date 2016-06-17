@@ -45,12 +45,9 @@ script:
   - echo "Building SDK Containers"
   - ./scripts/build_containers.sdk
   - docker images
-  - docker  run -d  -p 10003:10003  --name=crops-codi3 crops/codi
-  - sleep 10
-  - docker  inspect crops-codi3 | grep Running
-  - docker logs crops-codi3
-  - docker  run -d  --link crops-codi3   bavery/toolchain-i586:2.1
+  - nmap localhost | egrep 10000
   - python tests.py
+  - nmap localhost | egrep 10000
   - ./base/scripts/pushToDockerhub.sh
 
 after_success:
