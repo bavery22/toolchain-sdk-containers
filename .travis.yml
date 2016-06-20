@@ -50,7 +50,7 @@ script:
   - python tests.py
   - docker logs crops-codi
   - wget http://localhost:10000/codi/list-toolchains
-  - cat index.html
+  - cat list-toolchains
   - netstat -apn
   - nmap -p 28000-28100 localhost
   - ./base/scripts/pushToDockerhub.sh
