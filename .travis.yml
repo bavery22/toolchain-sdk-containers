@@ -48,6 +48,7 @@ script:
   - netstat -apn
   - nmap -p 28000-28100 localhost
   - python tests.py
+  - docker logs crops-codi
   - netstat -apn
   - nmap -p 28000-28100 localhost
   - ./base/scripts/pushToDockerhub.sh
