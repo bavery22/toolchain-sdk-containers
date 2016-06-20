@@ -45,14 +45,11 @@ script:
   - echo "Building SDK Containers"
   - ./scripts/build_containers.sdk
   - docker images
-  - netstat -apn
-  - nmap -p 28000-28100 localhost
   - python tests.py
+  - echo "Docker Logs ----"
   - docker logs crops-codi
   - wget http://localhost:10000/codi/list-toolchains
   - cat list-toolchains
-  - netstat -apn
-  - nmap -p 28000-28100 localhost
   - ./base/scripts/pushToDockerhub.sh
 
 after_success:
