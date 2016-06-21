@@ -50,7 +50,7 @@ class TestToolchainsRegistered(unittest.TestCase):
         self.codiPort=os.environ['CODI_PORT']
         self.dockerhubRepo=os.environ['DOCKERHUB_REPO']
         self.ypRelease=os.environ['YP_RELEASE']
-
+        self.ok=True
         cmd = "docker  run -d  -v /var/run/docker.sock:/var/run/docker.sock  -p %s:%s  --name=crops-codi crops/codi" % \
               (self.codiPort,self.codiPort)
         if runAndLog(cmd):
@@ -58,11 +58,6 @@ class TestToolchainsRegistered(unittest.TestCase):
             runAndLog(cmd)
         # getting rethinkdb and codi up can take a bit
         time.sleep(10)
-        # this can be useful for debugging if the crops-codi container is having issues
-        # we can't do it right away as there is a delay in bringing up the db
-        #cmd="docker logs crops-codi"
-        #runAndLog(cmd)
-
         self.targets = os.environ['TARGETS']
         self.toolchainContainers=[]
         for t in self.targets.split():
@@ -72,7 +67,16 @@ class TestToolchainsRegistered(unittest.TestCase):
         # we need to give the containers time to register
         time.sleep(10)
     def tearDown(self):
-        #remove the server container
+        if not self.ok:
+            print("Teardown: FAIL logs to follow")
+            # print out the logs of what went wrong
+            cmd = "docker logs crops-codi"
+            runAndLog(cmd)
+            for t in self.targets.split():
+                cmd = "docker logs tc-%s"%(t.lower())
+                runAndLog(cmd)
+
+        # clean up the containers
         cmd = "docker rm -f crops-codi"
         runAndLog(cmd)
         for t in self.targets.split():
@@ -107,7 +111,7 @@ class TestToolchainsRegistered(unittest.TestCase):
 
             found &= myFound
 
-
+        self.ok &= found
         self.assertTrue(found)
 
 
