@@ -70,7 +70,7 @@ class TestToolchainsRegistered(unittest.TestCase):
         if not self.ok:
             print("Teardown: FAIL logs to follow")
             # print out the logs of what went wrong
-            cmd = "docker logs crops-codi"
+            cmd = "docker logs --tail=all crops-codi"
             runAndLog(cmd)
             for t in self.targets.split():
                 cmd = "docker logs tc-%s"%(t.lower())
@@ -89,7 +89,11 @@ class TestToolchainsRegistered(unittest.TestCase):
         found=True
         for t in self.targets.split():
             time.sleep(1)
-            myFilter={'filter':'{\"target\":{\"arch\":\"%s\"}}'%(TtoA[t])}
+            try:
+                myFilter={'filter':'{\"target\":{\"arch\":\"%s\"}}'%(TtoA[t])}
+            except:
+                myFilter={'filter':'{\"target\":{\"arch\":\"%s\"}}'%(t)}
+
             myUrl = "http://%s:%s/codi/list-toolchains"%(self.codiAddr,self.codiPort)
             r=requests.get(myUrl,params=myFilter)
             myFound=(r.status_code==200)
@@ -103,8 +107,8 @@ class TestToolchainsRegistered(unittest.TestCase):
             except:
                 myFound=False
             if not myFound:
-                print("Bad arch. Failed to find arch toolchain :%s\n"%(TtoA[t]))
-                print ("BAVERY: rText=%s\n"%(r.text))
+                print("Bad arch. Failed to find arch toolchain for target :%s\n"%(t))
+                print ("rText=%s\n"%(r.text))
                 if len(r.json()) > 0:
                     print ("returned json was %s\n"%(r.json()[0]))
                 print("from CODI server url=<%s>,filter=<%s>\n"%(myUrl,myFilter))
