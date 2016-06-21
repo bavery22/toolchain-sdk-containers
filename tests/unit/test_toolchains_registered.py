@@ -70,9 +70,11 @@ class TestToolchainsRegistered(unittest.TestCase):
         if not self.ok:
             print("Teardown: FAIL logs to follow")
             # print out the logs of what went wrong
+            print "crops-codi log:"
             cmd = "docker logs --tail=all crops-codi"
             runAndLog(cmd)
             for t in self.targets.split():
+                print ("%s log:"%(t))
                 cmd = "docker logs tc-%s"%(t.lower())
                 runAndLog(cmd)
 
