@@ -29,18 +29,20 @@ TtoA={'core2-64':'x86_64',
       'armv5e':'arm',
       'mips64':'mips64'}
 
-def startTargetToolchain(name):
+def runAndLog(cmd):
+    p=subprocess.Popen(cmd.split(), shell=False)
+    sout,serr = p.communicate()
+    if p.returncode:
+        print("SAD cmd = <%s>"%(cmd))
+        print("p.returncode=%d sout = <%s> serr = <%s>\n"%(p.returncode,sout,serr))
+    return p.returncode
 
-#    cmd = "docker  run -d -v /var/run/docker.sock:/var/run/docker.sock --link crops-codi   %s" % (name)
-    cmd = "docker  run -d  --link crops-codi --name=tc   %s" % (name)
-    p=subprocess.Popen(cmd.split(), shell=False)
-    sout,serr = p.communicate()
-    print("p.returncode=%d sout = <%s> serr = <%s>\n"%(p.returncode,sout,serr))
-    cmd="docker logs tc"
-    print ("cmd = <%s>\n"%(cmd))
-    p=subprocess.Popen(cmd.split(), shell=False)
-    sout,serr = p.communicate()
-    print("p.returncode=%d sout = <%s> serr = <%s>\n"%(p.returncode,sout,serr))
+def startTargetToolchain(t,cName):
+
+    cmd = "docker  run -d  -v /var/run/docker.sock:/var/run/docker.sock --link crops-codi --name=tc-%s   %s" % (t.lower(),cName)
+    if runAndLog(cmd):
+        cmd="docker logs tc-%s"%(t.lower())
+        runAndLog(cmd)
 
 class TestToolchainsRegistered(unittest.TestCase):
     def setUp(self):
@@ -48,43 +50,34 @@ class TestToolchainsRegistered(unittest.TestCase):
         self.codiPort=os.environ['CODI_PORT']
         self.dockerhubRepo=os.environ['DOCKERHUB_REPO']
         self.ypRelease=os.environ['YP_RELEASE']
-        #        cmd = "docker  run -d -v /var/run/docker.sock:/var/run/docker.sock -p %s:%s  --name=crops-codi crops/codi"
-        cmd = "docker  run -d  -p %s:%s  --name=crops-codi crops/codi" % \
+
+        cmd = "docker  run -d  -v /var/run/docker.sock:/var/run/docker.sock  -p %s:%s  --name=crops-codi crops/codi" % \
               (self.codiPort,self.codiPort)
-        print ("codi cmd = <%s>\n"%(cmd))
-        p=subprocess.Popen(cmd.split(), shell=False)
-        sout,serr = p.communicate()
-        print("p.returncode=%d sout = <%s> serr = <%s>\n"%(p.returncode,sout,serr))
+        if runAndLog(cmd):
+            cmd = "docker logs crops-codi"
+            runAndLog(cmd)
         # getting rethinkdb and codi up can take a bit
         time.sleep(10)
-        cmd="docker ps -a"
-        print ("cmd = <%s>\n"%(cmd))
-        p=subprocess.Popen(cmd.split(), shell=False)
-        sout,serr = p.communicate()
-        print("p.returncode=%d sout = <%s> serr = <%s>\n"%(p.returncode,sout,serr))
-        cmd="docker inspect crops-codi"
-        print ("cmd = <%s>\n"%(cmd))
-        p=subprocess.Popen(cmd.split(), shell=False)
-        sout,serr = p.communicate()
-        print("p.returncode=%d sout = <%s> serr = <%s>\n"%(p.returncode,sout,serr))
-        cmd="docker logs crops-codi"
-        print ("cmd = <%s>\n"%(cmd))
-        p=subprocess.Popen(cmd.split(), shell=False)
-        sout,serr = p.communicate()
-        print("p.returncode=%d sout = <%s> serr = <%s>\n"%(p.returncode,sout,serr))
+        # this can be useful for debugging if the crops-codi container is having issues
+        # we can't do it right away as there is a delay in bringing up the db
+        #cmd="docker logs crops-codi"
+        #runAndLog(cmd)
 
         self.targets = os.environ['TARGETS']
         self.toolchainContainers=[]
         for t in self.targets.split():
             toolchainContainer="%s/toolchain-%s:%s" % (self.dockerhubRepo,t,self.ypRelease)
             self.toolchainContainers.append(toolchainContainer)
-            startTargetToolchain(toolchainContainer)
+            startTargetToolchain(t,toolchainContainer)
         # we need to give the containers time to register
         time.sleep(10)
     def tearDown(self):
         #remove the server container
         cmd = "docker rm -f crops-codi"
-        #p=subprocess.Popen(cmd.split(), shell=False)
+        runAndLog(cmd)
+        for t in self.targets.split():
+            cmd = "docker rm -f tc-%s"%(t.lower())
+            runAndLog(cmd)
         pass
 
 
