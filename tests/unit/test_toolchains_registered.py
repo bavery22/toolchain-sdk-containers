@@ -51,19 +51,19 @@ class TestToolchainsRegistered(unittest.TestCase):
         self.dockerhubRepo=os.environ['DOCKERHUB_REPO']
         self.ypRelease=os.environ['YP_RELEASE']
         self.ok=True
-        cmd = "docker  run -d  -v /var/run/docker.sock:/var/run/docker.sock  -p %s:%s  --name=crops-codi crops/codi" % \
-              (self.codiPort,self.codiPort)
-        if runAndLog(cmd):
-            cmd = "docker logs crops-codi"
-            runAndLog(cmd)
+        #cmd = "docker  run -d  -v /var/run/docker.sock:/var/run/docker.sock  -p %s:%s  --name=crops-codi crops/codi" % \
+        #      (self.codiPort,self.codiPort)
+        #if runAndLog(cmd):
+        #    cmd = "docker logs crops-codi"
+        #    runAndLog(cmd)
         # getting rethinkdb and codi up can take a bit
-        time.sleep(10)
+        #time.sleep(10)
         self.targets = os.environ['TARGETS']
         self.toolchainContainers=[]
         for t in self.targets.split():
             toolchainContainer="%s/toolchain-%s:%s" % (self.dockerhubRepo,t,self.ypRelease)
             self.toolchainContainers.append(toolchainContainer)
-            startTargetToolchain(t,toolchainContainer)
+            #startTargetToolchain(t,toolchainContainer)
         # we need to give the containers time to register
         time.sleep(10)
     def tearDown(self):
