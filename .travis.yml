@@ -48,10 +48,6 @@ script:
   - docker ps
   - docker images
   - python tests.py
-  - echo "Docker Logs ----"
-  - docker logs crops-codi
-  - wget http://localhost:10000/codi/list-toolchains
-  - cat list-toolchains
   - ./base/scripts/pushToDockerhub.sh
 
 after_success:
