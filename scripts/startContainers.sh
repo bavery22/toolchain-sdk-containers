@@ -7,4 +7,6 @@ while ! wget -q http://localhost:$CODI_PORT/codi/; do
     sleep 1
 done
 IFS=' '; for t in $TARGETS; do
+    echo "Starting toolchain  $DOCKERHUB_REPO/toolchain-$t:$YP_RELEASE"
     docker run -d --link crops-codi --name=tc-$t $DOCKERHUB_REPO/toolchain-$t:$YP_RELEASE
+done

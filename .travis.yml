@@ -27,10 +27,11 @@ compiler:
 before_install:
   # list docker-engine versions
   - apt-cache madison docker-engine
-  - docker pull crops/codi:latest
-
   # upgrade docker-engine to specific version
   - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION} net-tools nmap wget
+  - docker pull crops/codi:latest
+  - ./scripts/startContainers.sh
+
 install:
   - pip install requests
 
