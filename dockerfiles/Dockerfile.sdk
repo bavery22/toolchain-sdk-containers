@@ -20,11 +20,11 @@ ARG RELEASE
 
 # Build and install TURFF
 RUN mkdir -p /usr/local/crops-py
-COPY crops-py/turff /usr/local/crops-py/turff
-COPY crops-py/launchers/turff-launcher.py /usr/local/crops-py/launchers/
-COPY crops-py/utils /usr/local/crops-py/utils
-COPY crops-py/README.rst /usr/local/crops-py/
-COPY crops-py/setup.py /usr/local/crops-py/
+COPY base/crops-py/turff /usr/local/crops-py/turff
+COPY base/crops-py/launchers/turff-launcher.py /usr/local/crops-py/launchers/
+COPY base/crops-py/utils /usr/local/crops-py/utils
+COPY base/crops-py/README.rst /usr/local/crops-py/
+COPY base/crops-py/setup.py /usr/local/crops-py/
 
 
 RUN cd /usr/local/crops-py/ && \
