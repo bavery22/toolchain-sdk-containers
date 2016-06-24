@@ -40,7 +40,8 @@ before_script:
 
 script:
   - docker version
-  - git submodule update --init --recursive
+  - chmod 777 ./base/scripts/updateSubmodules.sh ./base/scripts/setDockerhubRepo.sh
+  - ./base/scripts/updateSubmodules.sh
   - echo "set Docker Repo"
   - source ./base/scripts/setDockerhubRepo.sh
   - echo "Building SDK Containers"
